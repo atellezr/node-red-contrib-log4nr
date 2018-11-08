@@ -27,7 +27,7 @@ Basically you need to add a new _logging_ in your *settings.js* file
 
 Probably, unless you modified it, you'll have close to the bottom of the file something like this:
 
-```json
+```javascript
     // Configure the logging output
     logging: {
         // Only console logging is currently supported
@@ -51,7 +51,7 @@ Probably, unless you modified it, you'll have close to the bottom of the file so
 
 Here you can add more loggers, so you have to create another one, it doesn't matter the name, that has to be log handler exposed by this package:
 
-```json
+```javascript
     // Configure the logging output
     logging: {
         // Only console logging is currently supported
@@ -73,7 +73,7 @@ In the file [levelsConfiguration.js](log4nr/levelsConfiguration.js) there is an 
 
 These methods require as input the json object with the proper configuration. A valid configuration is defined as a JSON object as followed:
 
-```json
+```javascript
 {
   "logging": {
     "levels": {
@@ -102,7 +102,7 @@ There are 3 sections (calling in somehow) with different priorities:
 
 In the previous schema the *CONFIG_DEFINITION* is an object:
 
-```json
+```javascript
 {
   "in": {
     "target": TARGETS,
@@ -122,9 +122,9 @@ As seen, this config definition has 2 sections:
 
 As *TARGETS* (string compunded by texts separated by comma) there are defined currently these ones:
 
--  *nodedebug*
--  *nodemetric*
--  *debugtab*
+-  *nodedebug*: uses the `node.debug` method for writting the information
+-  *nodemetric*: uses the `node.metric` method for writting the information
+-  *debugtab*: sends the information to the editor's debug tab
 
 
 ## Explanations of the code

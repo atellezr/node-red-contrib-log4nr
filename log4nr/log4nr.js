@@ -9,7 +9,8 @@ let each_node_fn, get_node_fn;
  * to control the "send" and "receive" events
  */
 function updateNodes() {
-  console.log("Updating nodes...");
+  console.log("Updating nodes after a flows deployment...");
+  let counter=0;
   each_node_fn((node) => {
     //console.log(node);
     const node_object = get_node_fn(node.id) || {on: function(){}};
@@ -23,16 +24,10 @@ function updateNodes() {
       }
       source_metric(eventname, msg, metricValue);
     }
+    counter++;
   });
-  console.log("Nodes updated");
+  console.log(`${counter} nodes updated after the flows deployment`);
 }
-
-
-
-setTimeout(function(){
-  // first execution, once everything is loaded
-  updateNodes();
-}, 5000);
 
 
 // connects the function we want to execute when a deployment is done

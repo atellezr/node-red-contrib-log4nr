@@ -2,6 +2,7 @@
   "name": "node-red-contrib-log4nr",
   "version": "1.0.1",
   "description": "Node-RED extension for managing logs at node level, showing information of each node when entering/exiting",
+  "main": "index.js",
   "dependencies": {},
   "devDependencies": {},
   "license": "Apache-2.0",

@@ -107,38 +107,40 @@ function textFitsInRegularExpression(text, listOfRegExp) {
 function printData(node, msg, logging_cfg, event_description) {
   const targets = (logging_cfg.target || "").split(",");
   const datas = (logging_cfg.data || "").split(",");
+
+  // preparing the message to be printed
+  let message = {
+    "_msgid": msg._msgid,
+    "event": event_description,
+    "data": {}
+  };
+
   datas.forEach((_data) => {
     const data = _data.trim();
     const value = data === "@duration" ? node.__duration : getFieldValue(node, msg, data);
-    // preparing the message to be printed
-    const message = {
-      "_msgid": msg._msgid,
-      "event": event_description,
-      "key": data,
-      "value": value || "-not defined-"
-    };
+    message.data[data] = value;
+  });
 
-    targets.forEach((_target) => {
-      const target = _target.trim();
-      if (target === "nodedebug") {
-        // prints in the standard logging
-        node.debug(JSON.stringify(message));
-      }
-      else if (target === "debugtab") {
-        // publish the information to the debug tab
-        publishInDebugTab("debug", {
-          "id": node.id,
-          "format": "Object",
-          "name": node.name,
-          "msg": JSON.stringify(message),
-          "topic": msg.topic || ""
-        });
-      }
-      else if (target === "nodemetric") {
-        // send the information as metric
-        node.metric("log4nr", msg, message);
-      }
-    });
+  targets.forEach((_target) => {
+    const target = _target.trim();
+    if (target === "nodedebug") {
+      // prints in the standard logging
+      node.debug(JSON.stringify(message));
+    }
+    else if (target === "debugtab") {
+      // publish the information to the debug tab
+      publishInDebugTab("debug", {
+        "id": node.id,
+        "format": "Object",
+        "name": node.name,
+        "msg": JSON.stringify(message),
+        "topic": msg.topic || ""
+      });
+    }
+    else if (target === "nodemetric") {
+      // send the information as metric
+      node.metric("log4nr", msg, message);
+    }
   });
 }
 

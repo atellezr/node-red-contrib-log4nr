@@ -118,30 +118,34 @@ function printData(node, msg, logging_cfg, event_description) {
   datas.forEach((_data) => {
     const data = _data.trim();
     const value = data === "@duration" ? node.__duration : getFieldValue(node, msg, data);
-    message.data[data] = value;
+    if (value !== undefined) {
+      message.data[data] = value;
+    }
   });
 
-  targets.forEach((_target) => {
-    const target = _target.trim();
-    if (target === "nodedebug") {
-      // prints in the standard logging
-      node.debug(JSON.stringify(message));
-    }
-    else if (target === "debugtab") {
-      // publish the information to the debug tab
-      publishInDebugTab("debug", {
-        "id": node.id,
-        "format": "Object",
-        "name": node.name,
-        "msg": JSON.stringify(message),
-        "topic": msg.topic || ""
-      });
-    }
-    else if (target === "nodemetric") {
-      // send the information as metric
-      node.metric("log4nr", msg, message);
-    }
-  });
+  if (Object.keys(message.data).length) {
+    targets.forEach((_target) => {
+      const target = _target.trim();
+      if (target === "nodedebug") {
+        // prints in the standard logging
+        node.debug(JSON.stringify(message));
+      }
+      else if (target === "debugtab") {
+        // publish the information to the debug tab
+        publishInDebugTab("debug", {
+          "id": node.id,
+          "format": "Object",
+          "name": node.name,
+          "msg": JSON.stringify(message),
+          "topic": msg.topic || ""
+        });
+      }
+      else if (target === "nodemetric") {
+        // send the information as metric
+        node.metric("log4nr", msg, message);
+      }
+    });
+  }
 }
 
 
@@ -153,21 +157,27 @@ function printData(node, msg, logging_cfg, event_description) {
  * @param {String} dataPath 
  */
 function getFieldValue(node, msg, dataPath) {
-  const _dataPath = dataPath || "unknown.";
-  const regexp = _dataPath.match(/^([^\.]+)\./);
-  const contextType = regexp ? regexp[1] : "";
-  const field = _dataPath.substring(contextType.length+1);
+  try {
+    const _dataPath = dataPath || "unknown.";
+    const regexp = _dataPath.match(/^([^\.]+)\./);
+    const contextType = regexp ? regexp[1] : "";
+    const field = _dataPath.substring(contextType.length+1);
 
-  if (contextType === "msg") {
-    return getMessageProperty(msg, field);
+    if (contextType === "msg") {
+      return getMessageProperty(msg, field);
+    }
+    else if (contextType === "flow") {
+      return node.context().flow.get(field);
+    }
+    else if (contextType === "global") {
+      return node.context().global.get(field);
+    }
+    else {
+      return undefined;
+    }
   }
-  else if (contextType === "flow") {
-    return node.context().flow.get(field);
-  }
-  else if (contextType === "global") {
-    return node.context().global.get(field);
-  }
-  else {
+  catch(e) {
+    node.log(`[log4nr] The field "${dataPath || ""}" doesn't exist for this msg`);
     return undefined;
   }
 }

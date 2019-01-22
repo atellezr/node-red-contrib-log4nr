@@ -1,5 +1,9 @@
 # [Unreleased]
 
+# v1.0.3: Fixed referece to 'this' inside the source metric method
+
+-  Fixed the reference to the source _metric_ method in order not to lose the _this_ reference inside
+
 # v1.0.2: Missed extend, and fixed error for non-existing data in the msg
 
 -  #2: Added missed dependency _extend_ in _package.json_

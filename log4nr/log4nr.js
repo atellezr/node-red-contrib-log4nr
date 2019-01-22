@@ -13,8 +13,8 @@ function updateNodes() {
   let counter=0;
   each_node_fn((node) => {
     //console.log(node);
-    const node_object = get_node_fn(node.id) || {on: function(){}};
-    const source_metric = node_object.metric;
+    const node_object = get_node_fn(node.id) || {on: function(){}, metric: function(){}};
+    node_object.source_metric = node_object.metric;
     node_object.metric = function(eventname, msg, metricValue) {
       if (eventname && eventname === "receive") {
         log_levels.onReceive(node_object, msg);
@@ -22,7 +22,7 @@ function updateNodes() {
       else if (eventname && eventname === "send") {
         log_levels.onSend(node_object, msg);
       }
-      source_metric(eventname, msg, metricValue);
+      node_object.source_metric(eventname, msg, metricValue);
     }
     counter++;
   });
